@@ -15,12 +15,16 @@ public class Stock {
     }
 
     public void comparerPrix(Enchere enchere){
-
         try {
             ConnectionBD.acheterAuto(enchere);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        try
+        {
+            Thread.currentThread().sleep(30000);
+        }
+        catch(Exception e){}
 
     }
     }

@@ -121,32 +121,38 @@ public class ConnectionBD {
         Statement stmt = conn.createStatement();
         String command = "SELECT modele,idEnchere,libelleE, PrixAchatIm FROM enchere where PrixAchatIm <(SELECT AVG(e1.PrixAchatIm) AS PrixMoyenMarche FROM enchere e1 WHERE e1.modele = '"+enchere.getModele()+"') ";
         ResultSet result = stmt.executeQuery(command);
-        if(result==null){
-            System.out.println("AUCUN ARTICLE A ACHETER! ");
-        }
-        else f
-        while (result.next()) {
-            String modele = result.getString("modele");
-            int idEnchere = result.getInt("idEnchere");
-            String libelle = result.getString("libelleE");
-            double prixAchatIm = result.getDouble("PrixAchatIm");
+           while (result.next()) {
 
-            System.out.println("L'article a acheter: ");
-            System.out.println("Libelle de l'enchere: " + libelle);
-            System.out.println("Numero de l'enchere: " + idEnchere);
-            System.out.println("Prix d'achat: " + prixAchatIm);
-            System.out.println("Modele de l'article: " + modele);
+               String modele = result.getString("modele");
+               int idEnchere = result.getInt("idEnchere");
+               String libelle = result.getString("libelleE");
+               double prixAchatIm = result.getDouble("PrixAchatIm");
+               if (modele == null) {
+                   System.out.println("AUCUN ARTICLE A ACHETER! ");
+               } else {
+                   Statement pstmt = conn.createStatement();
+                   String sql = "UPDATE enchere SET libelleE = ? WHERE idEnchere =?";
+                   pstmt.executeUpdate(sql);
+                   System.out.println("L'article a acheter: ");
+                   System.out.println("Libelle de l'enchere: " + libelle);
+                   System.out.println("Numero de l'enchere: " + idEnchere);
+                   System.out.println("Prix d'achat: " + prixAchatIm);
+                   System.out.println("Modele de l'article: " + modele);
 
-            Statement stmt1 = conn.createStatement();
-            String command1 = "INSERT INTO stock (libelleS, modeleS, dateAchat, prixAchat) VALUES('"+libelle+"','"+modele+"',NOW(),'"+prixAchatIm+"')";
-            stmt1.executeUpdate(command1);
-            System.out.println( idEnchere + " "+ modele + " " + " enregistree avec succes");
-            Statement stmt2 = conn.createStatement();
-            String command2 = "DELETE FROM enchere WHERE idEnchere = '"+idEnchere+"'";
-            stmt2.executeUpdate(command2);
-        }
+                   Statement stmt1 = conn.createStatement();
+                   String command1 = "INSERT INTO stock (libelleS, modeleS, dateAchat, prixAchat) VALUES('" + libelle + "','" + modele + "',NOW(),'" + prixAchatIm + "')";
+                   stmt1.executeUpdate(command1);
+                   System.out.println(idEnchere + " " + modele + " " + " enregistree avec succes");
+                   System.out.println(" ");
+                   Statement stmt2 = conn.createStatement();
+                   String command2 = "DELETE FROM enchere WHERE idEnchere = '" + idEnchere + "'";
+                   stmt2.executeUpdate(command2);
+               }
+
+           }
 
         result.close();
+
         conn.close();
     }
 
