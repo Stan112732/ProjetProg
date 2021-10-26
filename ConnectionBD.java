@@ -122,17 +122,17 @@ public class ConnectionBD {
         String command = "SELECT modele,idEnchere,libelleE, PrixAchatIm FROM enchere where PrixAchatIm <(SELECT AVG(e1.PrixAchatIm) AS PrixMoyenMarche FROM enchere e1 WHERE e1.modele = '"+enchere.getModele()+"') ";
         ResultSet result = stmt.executeQuery(command);
            while (result.next()) {
-
+               Statement pstmt = conn.createStatement();
+               String sql = "FLUSH TABLES";
+               pstmt.executeUpdate(sql);
                String modele = result.getString("modele");
                int idEnchere = result.getInt("idEnchere");
                String libelle = result.getString("libelleE");
                double prixAchatIm = result.getDouble("PrixAchatIm");
+
                if (modele == null) {
                    System.out.println("AUCUN ARTICLE A ACHETER! ");
                } else {
-                   Statement pstmt = conn.createStatement();
-                   String sql = "UPDATE enchere SET libelleE = ? WHERE idEnchere =?";
-                   pstmt.executeUpdate(sql);
                    System.out.println("L'article a acheter: ");
                    System.out.println("Libelle de l'enchere: " + libelle);
                    System.out.println("Numero de l'enchere: " + idEnchere);
@@ -147,6 +147,7 @@ public class ConnectionBD {
                    Statement stmt2 = conn.createStatement();
                    String command2 = "DELETE FROM enchere WHERE idEnchere = '" + idEnchere + "'";
                    stmt2.executeUpdate(command2);
+
                }
 
            }
@@ -156,7 +157,9 @@ public class ConnectionBD {
         conn.close();
     }
 
-    }
+
+}
+
 
 
 

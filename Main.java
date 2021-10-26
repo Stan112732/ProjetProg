@@ -1,9 +1,10 @@
+import java.sql.SQLException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 
 		/*//PARTIE I : CREATION VISITEUR
 		System.out.println("visteur");
@@ -147,6 +148,7 @@ public class Main {
 		System.out.println(" ");
 		System.out.println(" ");
 		sto.comparerPrix(en3);
+
 
 
 
