@@ -119,26 +119,30 @@ public class ConnectionBD {
     public static void acheterAuto(Enchere enchere) throws SQLException {
         Connection conn = getCon();
         Statement stmt = conn.createStatement();
-        String command = "SELECT modele,idEnchere FROM enchere where PrixAchatIm <(SELECT AVG(e1.PrixAchatIm) AS PrixMoyenMarche FROM enchere e1 WHERE e1.modele = '"+enchere.getModele()+"') ";
+        String command = "SELECT modele,idEnchere,libelleE, PrixAchatIm FROM enchere where PrixAchatIm <(SELECT AVG(e1.PrixAchatIm) AS PrixMoyenMarche FROM enchere e1 WHERE e1.modele = '"+enchere.getModele()+"') ";
         ResultSet result = stmt.executeQuery(command);
+        if(result==null){
+            System.out.println("AUCUN ARTICLE A ACHETER! ");
+        }
         while (result.next()) {
+            String modele = result.getString("modele");
             int idEnchere = result.getInt("idEnchere");
             String libelle = result.getString("libelleE");
-            String modele = result.getString("modele");
-            System.out.println("Les articles a acheter: ");
-            System.out.println(" ");
+            double prixAchatIm = result.getDouble("PrixAchatIm");
+            result.last();
+            System.out.println("L'article a acheter: ");
             System.out.println("Libelle de l'enchere: " + libelle);
-            System.out.println(" ");
             System.out.println("Numero de l'enchere: " + idEnchere);
-            System.out.println(modele);
+            System.out.println("Prix d'achat: " + prixAchatIm);
+            System.out.println("Modele de l'article: " + modele);
 
-
-        String command1 = "INSERT INTO stock (libelleS, modeleS, dateAchat, prixAchat) VALUES('"+enchere.getLibelleEnchere()+"','"+enchere.getModele()+"',NOW(),'"+enchere.getPrixImm()+"')";
-        stmt.executeUpdate(command1);
-        System.out.println( idEnchere + " "+ modele + " " + " enregistree avec succes");
-        String command2 = "DELETE FROM enchere WHERE idEnchere = '"+idEnchere+"'";
-        stmt.executeUpdate(command2);
+            String command1 = "INSERT INTO stock (libelleS, modeleS, dateAchat, prixAchat) VALUES('"+libelle+"','"+modele+"',NOW(),'"+prixAchatIm+"')";
+            stmt.executeUpdate(command1);
+            System.out.println( idEnchere + " "+ modele + " " + " enregistree avec succes");
+            String command2 = "DELETE FROM enchere WHERE idEnchere = '"+idEnchere+"'";
+            stmt.executeUpdate(command2);
         }
+
         result.close();
         conn.close();
     }
