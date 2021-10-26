@@ -124,6 +124,7 @@ public class ConnectionBD {
         if(result==null){
             System.out.println("AUCUN ARTICLE A ACHETER! ");
         }
+        else f
         while (result.next()) {
             String modele = result.getString("modele");
             int idEnchere = result.getInt("idEnchere");
