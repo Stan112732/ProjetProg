@@ -129,18 +129,20 @@ public class ConnectionBD {
             int idEnchere = result.getInt("idEnchere");
             String libelle = result.getString("libelleE");
             double prixAchatIm = result.getDouble("PrixAchatIm");
-            result.last();
+
             System.out.println("L'article a acheter: ");
             System.out.println("Libelle de l'enchere: " + libelle);
             System.out.println("Numero de l'enchere: " + idEnchere);
             System.out.println("Prix d'achat: " + prixAchatIm);
             System.out.println("Modele de l'article: " + modele);
 
+            Statement stmt1 = conn.createStatement();
             String command1 = "INSERT INTO stock (libelleS, modeleS, dateAchat, prixAchat) VALUES('"+libelle+"','"+modele+"',NOW(),'"+prixAchatIm+"')";
-            stmt.executeUpdate(command1);
+            stmt1.executeUpdate(command1);
             System.out.println( idEnchere + " "+ modele + " " + " enregistree avec succes");
+            Statement stmt2 = conn.createStatement();
             String command2 = "DELETE FROM enchere WHERE idEnchere = '"+idEnchere+"'";
-            stmt.executeUpdate(command2);
+            stmt2.executeUpdate(command2);
         }
 
         result.close();
