@@ -38,12 +38,11 @@ public class Stock {
     public void comparerPrix(Enchere enchere){
             Connection conn = getCon();
         try {
-            Thread.currentThread().sleep(50000);
+            Thread.currentThread().sleep(50000);//Dans 50 seconds on rafraichi la bd et on trouve l'article correspond a condition
             Statement pstmt = conn.createStatement();
             String sql = "FLUSH TABLES";
             pstmt.executeUpdate(sql);
             ConnectionBD.acheterAuto(enchere);
-
         }
         catch (Exception e) {
             e.printStackTrace();
