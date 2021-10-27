@@ -61,7 +61,6 @@ public class Main {
 		System.out.println("consuleter la liste d'enchere");*/
 		//Enchere en1 = new Enchere(01,"BIG PAPA",EtatEnchere.EN_ATTENTE,sca1 );
 		//Enchere en2 = new Enchere(02,"BIG MAMA",EtatEnchere.EN_ATTENTE,sca1);
-		Enchere en3 = new Enchere(03,"Ancienne bomb nuclaire","Russian", 40, EtatEnchere.EN_ATTENTE,sca2);
 		//en1.insererArticle("BIG PAPA",en1);//Inserer les encheres dans la liste d'enchere
 		//en2.insererArticle("BIG MAMA",en2);
 		//inserer l'enchere dans bd
@@ -143,11 +142,18 @@ public class Main {
 
 
 		//ZONE DE TEST
-		Stock sto = new Stock();
-		sto.calculerPrixMoyen(en3);
+		Enchere en3 = new Enchere(03,"Ancienne bomb nuclaire","American", 40, EtatEnchere.EN_ATTENTE,sca2);
+        Enchere en4 = new Enchere(04,"Ancienne nuclaire bomb","Russian",60,EtatEnchere.EN_ATTENTE,sca2);
+		//Stock sto = new Stock();
+		Agent agent1 = new Agent(01,4000);
+		agent1.calculerPrixMoyen(en4);
 		System.out.println(" ");
+		agent1.comparerPrixAchat(en4,agent1);
 		System.out.println(" ");
-		sto.comparerPrix(en3);
+		agent1.comparerPrixVente(en3,agent1);
+		//sto.calculerPrixMoyen(en3);
+		//sto.comparerPrixAchat(en3);
+		//sto.comparerPrixVente(en3);
 
 
 

@@ -103,51 +103,52 @@ public class ConnectionBD {
         conn.close();
     }
 
-    public static void getPrixMarche(Enchere enchere) throws Exception {
+    public static double getPrixMarche(Enchere enchere) throws Exception {
         Connection conn = getCon();
         Statement stmt = conn.createStatement();
         String command = "SELECT AVG(PrixAchatIm) AS PrixMoyenMarche FROM enchere WHERE modele = '"+enchere.getModele()+"'";
         ResultSet result = stmt.executeQuery(command);
+        double prixMoyenMarche = 0;
         while (result.next()) {
-            double PrixMoyenMarche = result.getInt("PrixMoyenMarche");
-            System.out.println("prix du marche pour ce produit: " + PrixMoyenMarche);
+            prixMoyenMarche = result.getDouble("PrixMoyenMarche");
+            System.out.println("prix du marche actuel pour ce produit: " + prixMoyenMarche);
         }
         result.close();
         conn.close();
+        return prixMoyenMarche;
     }
 
-    public static void acheterAuto(Enchere enchere) throws SQLException {
+    public static void acheterAuto(Enchere en, Agent ag) throws Exception {
         Connection conn = getCon();
+        double seuil = 0.3;
+        double prixMoyenMarche = getPrixMarche(en);
+
         Statement stmt = conn.createStatement();
-        String command = "SELECT modele,idEnchere,libelleE, PrixAchatIm FROM enchere where PrixAchatIm <(SELECT AVG(e1.PrixAchatIm) AS PrixMoyenMarche FROM enchere e1 WHERE e1.modele = '"+enchere.getModele()+"') ";
+        String command = "SELECT modele,idEnchere,libelleE, PrixAchatIm FROM enchere WHERE modele =  '"+en.getModele()+"'AND PrixAchatIm <(SELECT AVG(e1.PrixAchatIm) AS PrixMoyenMarche FROM enchere e1 WHERE e1.modele = '"+en.getModele()+"') ";
         ResultSet result = stmt.executeQuery(command);
+
            while (result.next()) {
-               Statement pstmt = conn.createStatement();
-               String sql = "FLUSH TABLES";
-               pstmt.executeUpdate(sql);
                String modele = result.getString("modele");
                int idEnchere = result.getInt("idEnchere");
                String libelle = result.getString("libelleE");
                double prixAchatIm = result.getDouble("PrixAchatIm");
 
-               if (modele == null) {
-                   System.out.println("AUCUN ARTICLE A ACHETER! ");
-               } else {
-                   System.out.println("L'article a acheter: ");
+               if((prixMoyenMarche-prixAchatIm)/100< seuil){
+                   System.out.println("L'article achetee: ");
                    System.out.println("Libelle de l'enchere: " + libelle);
                    System.out.println("Numero de l'enchere: " + idEnchere);
                    System.out.println("Prix d'achat: " + prixAchatIm);
+                   System.out.println("Prxi du marche actuel: " + prixMoyenMarche);
                    System.out.println("Modele de l'article: " + modele);
 
                    Statement stmt1 = conn.createStatement();
-                   String command1 = "INSERT INTO stock (libelleS, modeleS, dateAchat, prixAchat) VALUES('" + libelle + "','" + modele + "',NOW(),'" + prixAchatIm + "')";
+                   String command1 = "INSERT INTO stock (libelleS, modeleS, dateAchat, prixAchat,idagent) VALUES('" + libelle + "','" + modele + "',NOW(),'" + prixAchatIm + "','"+ag.getIdAgent()+"')";
                    stmt1.executeUpdate(command1);
                    System.out.println(idEnchere + " " + modele + " " + " enregistree avec succes");
                    System.out.println(" ");
                    Statement stmt2 = conn.createStatement();
                    String command2 = "DELETE FROM enchere WHERE idEnchere = '" + idEnchere + "'";
                    stmt2.executeUpdate(command2);
-
                }
 
            }
@@ -155,6 +156,44 @@ public class ConnectionBD {
         result.close();
 
         conn.close();
+    }
+
+    public static void venteAuto(Enchere en,Agent ag) throws Exception {
+        Connection conn = getCon();
+        double seuil = 0.5;
+        double prixMoyenMarche = getPrixMarche(en);
+
+        Statement stmt = conn.createStatement();
+        String command = "SELECT modeleS,idStock,libelleS, prixAchat FROM stock WHERE modeleS =  '"+en.getModele()+"'AND PrixAchat <(SELECT AVG(e1.PrixAchatIm) AS PrixMoyenMarche FROM enchere e1 WHERE e1.modele = '"+en.getModele()+"')";
+        ResultSet result = stmt.executeQuery(command);
+        while (result.next()) {
+            String modele = result.getString("modeleS");
+            int idStock = result.getInt("idStock");
+            String libelle = result.getString("libelleS");
+            double prixAchat = result.getDouble("prixAchat");
+            //System.out.println(modele + idStock + libelle + prixAchat);
+
+            if((prixMoyenMarche-prixAchat)/100< seuil){
+                System.out.println("L'article vendu: ");
+                System.out.println("Libelle de l'enchere: " + libelle);
+                System.out.println("Numero de l'enchere: " + idStock);
+                System.out.println("Prix d'achat: " + prixAchat);
+                System.out.println("Prix du marche actuel: " + prixMoyenMarche);
+                System.out.println("Modele de l'article: " + modele);
+
+                Statement stmt1 = conn.createStatement();
+                String command1 = "INSERT INTO enchere (libelleE, modele, prixAchatIm) VALUES('" + libelle + "','" + modele + "','" + prixAchat + "')";
+                stmt1.executeUpdate(command1);
+                System.out.println(idStock + " " + modele + " " + " mise en vente avec succes");
+                System.out.println(" ");
+                Statement stmt2 = conn.createStatement();
+                String command2 = "DELETE FROM Stock WHERE idStock = '" + idStock + "'";
+                stmt2.executeUpdate(command2);
+            }
+
+        }
+
+
     }
 
 
