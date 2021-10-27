@@ -146,14 +146,21 @@ public class Main {
         Enchere en4 = new Enchere(04,"Ancienne nuclaire bomb","Russian",60,EtatEnchere.EN_ATTENTE,sca2);
 		//Stock sto = new Stock();
 		Agent agent1 = new Agent(01,4000);
-		agent1.calculerPrixMoyen(en4);
+
+		//faire afficher le modele d'article envisagee
+		agent1.calculerPrixMoyen(en3);
 		System.out.println(" ");
-		agent1.comparerPrixAchat(en4,agent1);
+
+		//pour un agent, execute l'achat automatique dans une duree et un budget limitee
+		//ATTENTION, L'ARTICLE SERA ACHETE SI SON PRIX D'ACHAT IMMEDIAT EST INFERIEUR DE 30% DU PRIX DU MARCHE
+		//agent1.comparerPrixAchat(en4,agent1);
 		System.out.println(" ");
-		agent1.comparerPrixVente(en3,agent1);
-		//sto.calculerPrixMoyen(en3);
-		//sto.comparerPrixAchat(en3);
-		//sto.comparerPrixVente(en3);
+
+		//pour un agent, execute la vente automatique
+		//ATTENTION, L'ARTICLE SERA MISE EN VENTE QUAND ELLE PERD UNE MOITIE DE VALEUR OU LE PRIX DU MARCHE EST SUPERIEUR A 1.2 FOIS LE PRIX D'ACHAT
+		//agent1.comparerPrixVente(en3,agent1);
+		agent1.calculerBeneficeTotal(agent1);
+
 
 
 

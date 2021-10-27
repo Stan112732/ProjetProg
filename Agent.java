@@ -1,6 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Agent {
     //attributs
@@ -16,6 +14,10 @@ public class Agent {
 
     public int getIdAgent() {
         return idAgent;
+    }
+
+    public double getBudget() {
+        return budget;
     }
 
     public static Connection getCon() {
@@ -72,5 +74,23 @@ public class Agent {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void calculerBeneficeTotal(Agent ag){
+        Connection conn = getCon();
+        try{
+            Statement stmt = conn.createStatement();
+            String commande = "SELECT SUM(montantBenefice) AS BeneficeTotal FROM benefice WHERE idagent1 = '"+getIdAgent()+"'";
+            ResultSet result = stmt.executeQuery(commande);
+            while (result.next()) {
+                double beneficeTotal = result.getDouble("BeneficeTotal");
+                System.out.println("Votre benefice total: " + beneficeTotal+" euros");
+            }
+            result.close();
+            conn.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
     }
 }

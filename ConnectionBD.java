@@ -133,7 +133,7 @@ public class ConnectionBD {
                String libelle = result.getString("libelleE");
                double prixAchatIm = result.getDouble("PrixAchatIm");
 
-               if((prixMoyenMarche-prixAchatIm)/100< seuil){
+               if((prixMoyenMarche-prixAchatIm)/100< seuil && prixAchatIm<ag.getBudget()){
                    System.out.println("L'article achetee: ");
                    System.out.println("Libelle de l'enchere: " + libelle);
                    System.out.println("Numero de l'enchere: " + idEnchere);
@@ -160,7 +160,8 @@ public class ConnectionBD {
 
     public static void venteAuto(Enchere en,Agent ag) throws Exception {
         Connection conn = getCon();
-        double seuil = 0.5;
+        double seuilPerte = 0.5;
+        double seuilBenefice = 1.2;
         double prixMoyenMarche = getPrixMarche(en);
 
         Statement stmt = conn.createStatement();
@@ -170,30 +171,39 @@ public class ConnectionBD {
             String modele = result.getString("modeleS");
             int idStock = result.getInt("idStock");
             String libelle = result.getString("libelleS");
-            double prixAchat = result.getDouble("prixAchat");
+            double prixVente = result.getDouble("prixAchat");
+            double benefice = prixMoyenMarche - prixVente;
             //System.out.println(modele + idStock + libelle + prixAchat);
 
-            if((prixMoyenMarche-prixAchat)/100< seuil){
+            if((prixMoyenMarche-prixVente)/100< seuilPerte || (prixMoyenMarche-prixVente)/100> seuilBenefice){
                 System.out.println("L'article vendu: ");
                 System.out.println("Libelle de l'enchere: " + libelle);
                 System.out.println("Numero de l'enchere: " + idStock);
-                System.out.println("Prix d'achat: " + prixAchat);
+                System.out.println("Prix de vente: " + prixVente);
                 System.out.println("Prix du marche actuel: " + prixMoyenMarche);
+                System.out.println("Votre benefice dans cette vente: " + benefice);
                 System.out.println("Modele de l'article: " + modele);
 
                 Statement stmt1 = conn.createStatement();
-                String command1 = "INSERT INTO enchere (libelleE, modele, prixAchatIm) VALUES('" + libelle + "','" + modele + "','" + prixAchat + "')";
+                String command1 = "INSERT INTO enchere (libelleE, modele, prixAchatIm) VALUES('" + libelle + "','" + modele + "','" + prixVente + "')";
                 stmt1.executeUpdate(command1);
                 System.out.println(idStock + " " + modele + " " + " mise en vente avec succes");
                 System.out.println(" ");
                 Statement stmt2 = conn.createStatement();
                 String command2 = "DELETE FROM Stock WHERE idStock = '" + idStock + "'";
                 stmt2.executeUpdate(command2);
+                System.out.println(" ");
+                Statement stmt3 = conn.createStatement();
+                String commande3 = "INSERT INTO benefice(montantBenefice, idagent1) VALUES ('"+benefice+"','"+ag.getIdAgent()+"')";
+                stmt3.executeUpdate(commande3);
+
             }
 
         }
 
+        result.close();
 
+        conn.close();
     }
 
 
