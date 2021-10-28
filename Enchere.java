@@ -13,7 +13,7 @@ public class Enchere {
 	  public String modele;
       public double prixDepart;
       public EtatEnchere etatEnchere;
-      public SousCategorie sousCategorie;
+      public String categorie;
 	  public double prixReserve;
 	  public double prixAchatImm;
 	  public double pas;
@@ -28,13 +28,14 @@ public class Enchere {
   
   //constructor
   
-	public Enchere(int codeEN,String libelleEnchere,String modele,double prixAchatImm,EtatEnchere etatEnchere,SousCategorie sousCategorie) {
+	public Enchere(int codeEN,String libelleEnchere,String modele,double prixAchatImm,EtatEnchere etatEnchere,String categorie) {
 		this.codeEN = codeEN;
 		this.libelleEnchere = libelleEnchere;
 		this.modele = modele;
 		this.prixAchatImm = prixAchatImm;
 		this.etatEnchere = etatEnchere;
-		this.sousCategorie = sousCategorie;
+		this.categorie = categorie;
+
 	}
 
 	//methodes
@@ -51,7 +52,11 @@ public class Enchere {
 		return modele;
 	}
 
-	public void insererArticle(String libelleEnchere,Enchere en) {
+	public String getCategorie() {
+		return categorie;
+	}
+
+	public void insererArticle(String libelleEnchere, Enchere en) {
 		listeEnchere.add(libelleEnchere);
 		en.modifierEtat(EtatEnchere.EN_COURS);
 	}
